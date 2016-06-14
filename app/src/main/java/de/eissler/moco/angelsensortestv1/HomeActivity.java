@@ -7,10 +7,8 @@ import android.widget.TextView;
 
 import de.eissler.moco.angelsensortestv1.BLE.BleCharacteristic;
 import de.eissler.moco.angelsensortestv1.BLE.BleDevice;
-import de.eissler.moco.angelsensortestv1.BLE.Services.SrvHealthThermometer;
-import de.eissler.moco.angelsensortestv1.BLE.Services.SrvHeartRate;
-import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChHeartRateMeasurement;
-import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChTemperatureMeasurement;
+import de.eissler.moco.angelsensortestv1.BLE.Services.*;
+import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.*;
 
 /**
  * Created by raphy-laptop on 31.05.2016.
@@ -93,7 +91,7 @@ public class HomeActivity extends Activity {
             mBleDevice.registerServiceClass(SrvHeartRate.class);
             mBleDevice.registerServiceClass(SrvHealthThermometer.class);
             //mBleDevice.registerServiceClass(SrvBattery.class);
-            //mBleDevice.registerServiceClass(SrvActivityMonitoring.class);
+            mBleDevice.registerServiceClass(SrvActivityMonitoring.class);
 
         } catch (NoSuchMethodException e) {
             throw new AssertionError();
@@ -113,10 +111,10 @@ public class HomeActivity extends Activity {
         @Override
         public void onBluetoothServicesDiscovered(BleDevice device) {
             device.getService(SrvHeartRate.class).getHeartRateMeasurement().enableNotifications(mHeartRateListener);
-            device.getService(SrvHeartRate.class).getHeartRateMeasurement().readValue(mHeartRateListener);
+            //device.getService(SrvHeartRate.class).getHeartRateMeasurement().readValue(mHeartRateListener);
             device.getService(SrvHealthThermometer.class).getTemperatureMeasurement().enableNotifications(mTemperatureListener);
             //device.getService(SrvBattery.class).getBatteryLevel().enableNotifications(mBatteryLevelListener);
-            //device.getService(SrvActivityMonitoring.class).getStepCount().enableNotifications(mStepCountListener);
+            device.getService(SrvActivityMonitoring.class).getStepCount().enableNotifications(mStepCountListener);
             //mChAccelerationEnergyMagnitude = device.getService(SrvActivityMonitoring.class).getChAccelerationEnergyMagnitude();
             //Assert.assertNotNull(mChAccelerationEnergyMagnitude);
         }
@@ -136,6 +134,15 @@ public class HomeActivity extends Activity {
         }
     };
 
+    private final BleCharacteristic.ValueReadyCallback<ChStepCount.StepCountValue> mStepCountListener =
+            new BleCharacteristic.ValueReadyCallback<ChStepCount.StepCountValue>() {
+                @Override
+                public void onValueReady(final ChStepCount.StepCountValue steps) {
+                    displaySteps(steps.value);
+                }
+            };
+
+
     private final BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue> mTemperatureListener =
             new BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue>() {
                 @Override
@@ -150,6 +157,23 @@ public class HomeActivity extends Activity {
             displayHeartRate(hrMeasurement.getHeartRateMeasurement());
         }
     };
+
+
+    private void displaySteps(final float step) {
+        TextView textView = (TextView)findViewById(R.id.stepTextView);
+        textView.setText(step+"");
+
+
+
+        /*
+        ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1f);
+        effect.setDuration(ANIMATION_DURATION);
+        effect.setRepeatMode(Animation.REVERSE);
+        effect.setRepeatCount(1);
+        View thermometerTop = findViewById(R.id.imageview_thermometer_top);
+        thermometerTop.startAnimation(effect);
+        */
+    }
 
     private void displayTemperature(final float degreesCelsius) {
         TextView textView = (TextView)findViewById(R.id.temperaturTextView);
@@ -171,9 +195,20 @@ public class HomeActivity extends Activity {
     private void displayHeartRate(final int bpm) {
         TextView textView = (TextView)findViewById(R.id.heartrateTextView);
         textView.setText(bpm + " bpm");
+        /*
+        ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        effect.setDuration(ANIMATION_DURATION);
+        effect.setRepeatMode(Animation.REVERSE);
+        effect.setRepeatCount(1);
 
+        View heartView = findViewById(R.id.imageview_heart);
+        heartView.startAnimation(effect);
+        */
+    }
 
-
+    private void displayBattery(final int bpm) {
+        TextView textView = (TextView)findViewById(R.id.heartrateTextView);
+        textView.setText(bpm + " bpm");
         /*
         ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         effect.setDuration(ANIMATION_DURATION);

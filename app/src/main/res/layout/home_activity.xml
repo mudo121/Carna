@@ -25,7 +25,9 @@
             android:id="@+id/temperaturTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="asdasd"/>
+            android:text="0"/>
+
+
 
     </LinearLayout>
 
@@ -44,9 +46,30 @@
             android:id="@+id/heartrateTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="asdasd"/>
+            android:text="0"/>
 
     </LinearLayout>
+
+    <LinearLayout
+        android:paddingTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Steps: "/>
+
+        <TextView
+            android:id="@+id/stepTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"/>
+
+    </LinearLayout>
+
+
 
 
 
