@@ -1,10 +1,11 @@
 package de.eissler.moco.angelsensortestv1;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.Button;
+import android.os.Vibrator;
 import android.widget.TextView;
 
 import de.eissler.moco.angelsensortestv1.BLE.BleCharacteristic;
@@ -29,22 +30,23 @@ public class HomeActivity extends Activity {
     private BleDevice mBleDevice;
     private Handler mHandler;
     private Runnable mPeriodicReader;
-    //private ChAccelerationEnergyMagnitude mChAccelerationEnergyMagnitude = null;
 
     private static final int RSSI_UPDATE_INTERVAL = 1000; // Milliseconds
 
-    private Button mOpenHeartRateButton;
     private TextView mTextView;
-    private GraphView mAccelerationWaveformView, mBlueOpticalWaveformView, mGreenOpticalWaveformView;
+    private GraphView mBlueOpticalWaveformView, mGreenOpticalWaveformView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
+
+
         mTextView = (TextView) findViewById(R.id.angelAdressTextView);
         mHandler = new Handler(this.getMainLooper());
 
+        // erstelle Graph Views
         mGreenOpticalWaveformView = (GraphView) findViewById(R.id.graph_green);
         mGreenOpticalWaveformView.setStrokeColor(Color.GREEN);
         mBlueOpticalWaveformView = (GraphView) findViewById(R.id.graph_blue);
@@ -54,16 +56,12 @@ public class HomeActivity extends Activity {
             @Override
             public void run() {
                 mBleDevice.readRemoteRssi();
-                /*
-                if (mChAccelerationEnergyMagnitude != null) {
-                    mChAccelerationEnergyMagnitude.readValue(mAccelerationEnergyMagnitudeListener);
-                }*/
-
                 mHandler.postDelayed(mPeriodicReader, RSSI_UPDATE_INTERVAL);
             }
         };
     }
 
+    // Wenn die App wieder gestartet wird (z.B. aus dem Standby, oder wenn es im Hintergrund offen war), dann verbindet es sich mit dem Angel Sensor
     protected void onStart() {
         super.onStart();
 
@@ -72,26 +70,16 @@ public class HomeActivity extends Activity {
         mBleDeviceAddress = extras.getString("ble_device_address");
         mTextView.setText(mBleDeviceAddress);
 
-        /*
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            connectGraphs(mBleDeviceAddress);
-        } else {
-            connect(mBleDeviceAddress);
-        }
-         */
-
         connect(mBleDeviceAddress);
     }
 
+
+    // Wenn die App gestoppt wird, dann wird die Verbindung getrennt
     @Override
     protected void onStop() {
         super.onStop();
-        /*
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            displaySignalStrength(0);
-        }*/
-        unscheduleUpdaters();
-        mBleDevice.disconnect();
+        //unscheduleUpdaters();
+        //mBleDevice.disconnect();
     }
 
     private void connect(String deviceAddress) {
@@ -104,11 +92,12 @@ public class HomeActivity extends Activity {
         mBleDevice = new BleDevice(this, mDeviceLifecycleCallback, mHandler);
 
         try {
+            // Hier werden die Services Registriert, die alle benutzt werden wollen.
+            // Wenn man mehr vom Sensor nutzen will, dann müssen auch die entsprechenden Services registriert werden
             mBleDevice.registerServiceClass(SrvHeartRate.class);
             mBleDevice.registerServiceClass(SrvHealthThermometer.class);
             mBleDevice.registerServiceClass(SrvBattery.class);
             mBleDevice.registerServiceClass(SrvActivityMonitoring.class);
-
             mBleDevice.registerServiceClass(SrvWaveformSignal.class);
 
 
@@ -129,18 +118,14 @@ public class HomeActivity extends Activity {
     private final BleDevice.LifecycleCallback mDeviceLifecycleCallback = new BleDevice.LifecycleCallback() {
         @Override
         public void onBluetoothServicesDiscovered(BleDevice device) {
-            // aktiviert den Heart Rate listener
+
+            // Hier werden die Entsprechenden Servies aktiviert
+            // Für jeden Services gibt es einen Listener. Wenn der Angel Sensor einen Wert hat, dann wird die Funktion aufgerufen, die im Listener steht
+
             device.getService(SrvHeartRate.class).getHeartRateMeasurement().enableNotifications(mHeartRateListener);
-
             device.getService(SrvHealthThermometer.class).getTemperatureMeasurement().enableNotifications(mTemperatureListener);
-
             device.getService(SrvBattery.class).getBatteryLevel().enableNotifications(mBatteryLevelListener);
-
             device.getService(SrvActivityMonitoring.class).getStepCount().enableNotifications(mStepCountListener);
-            //mChAccelerationEnergyMagnitude = device.getService(SrvActivityMonitoring.class).getChAccelerationEnergyMagnitude();
-            //Assert.assertNotNull(mChAccelerationEnergyMagnitude);
-
-            //device.getService(SrvWaveformSignal.class).getAccelerationWaveform().enableNotifications(mAccelerationWaveformListener);
             device.getService(SrvWaveformSignal.class).getOpticalWaveform().enableNotifications(mOpticalWaveformListener);
         }
 
@@ -155,10 +140,12 @@ public class HomeActivity extends Activity {
 
         @Override
         public void onReadRemoteRssi(final int rssi) {
+            // Wird in dieser App nicht gebraucht
             //displaySignalStrength(rssi);
         }
     };
 
+    // Listener für den Step Counter
     private final BleCharacteristic.ValueReadyCallback<ChStepCount.StepCountValue> mStepCountListener =
             new BleCharacteristic.ValueReadyCallback<ChStepCount.StepCountValue>() {
                 @Override
@@ -168,6 +155,7 @@ public class HomeActivity extends Activity {
             };
 
 
+    // Listener für die Optische Wave Form, der Herz Frequenz (PPG Signal)
     private final BleCharacteristic.ValueReadyCallback<ChOpticalWaveform.OpticalWaveformValue> mOpticalWaveformListener = new BleCharacteristic.ValueReadyCallback<ChOpticalWaveform.OpticalWaveformValue>() {
         @Override
         public void onValueReady(ChOpticalWaveform.OpticalWaveformValue opticalWaveformValue) {
@@ -179,6 +167,7 @@ public class HomeActivity extends Activity {
         }
     };
 
+    // Listener für die Temperatur
     private final BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue> mTemperatureListener =
             new BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue>() {
                 @Override
@@ -187,6 +176,7 @@ public class HomeActivity extends Activity {
                 }
             };
 
+    // Listener für den Batterie Status
     private final BleCharacteristic.ValueReadyCallback<ChBatteryLevel.BatteryLevelValue> mBatteryLevelListener = new BleCharacteristic.ValueReadyCallback<ChBatteryLevel.BatteryLevelValue>() {
         @Override
         public void onValueReady(final ChBatteryLevel.BatteryLevelValue value) {
@@ -194,6 +184,7 @@ public class HomeActivity extends Activity {
         }
     };
 
+    // Listener für den Puls
     private final BleCharacteristic.ValueReadyCallback<ChHeartRateMeasurement.HeartRateMeasurementValue> mHeartRateListener = new BleCharacteristic.ValueReadyCallback<ChHeartRateMeasurement.HeartRateMeasurementValue>() {
         @Override
         public void onValueReady(final ChHeartRateMeasurement.HeartRateMeasurementValue hrMeasurement) {
@@ -205,62 +196,28 @@ public class HomeActivity extends Activity {
     private void displaySteps(final float step) {
         TextView textView = (TextView)findViewById(R.id.stepTextView);
         textView.setText(step+"");
-
-
-
-        /*
-        ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1f);
-        effect.setDuration(ANIMATION_DURATION);
-        effect.setRepeatMode(Animation.REVERSE);
-        effect.setRepeatCount(1);
-        View thermometerTop = findViewById(R.id.imageview_thermometer_top);
-        thermometerTop.startAnimation(effect);
-        */
     }
 
     private void displayTemperature(final float degreesCelsius) {
         TextView textView = (TextView)findViewById(R.id.temperaturTextView);
-        //textView.setText(degreesCelsius + "\u00b0C");
         textView.setText(degreesCelsius+"");
-        //textView.setText("yoyoyo");
+        long pattern[] = { 0, 100, 200, 300, 400,};
 
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        /*
-        ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 1f);
-        effect.setDuration(ANIMATION_DURATION);
-        effect.setRepeatMode(Animation.REVERSE);
-        effect.setRepeatCount(1);
-        View thermometerTop = findViewById(R.id.imageview_thermometer_top);
-        thermometerTop.startAnimation(effect);
-        */
+        v.vibrate(500);
+
+        //v.cancel();
     }
 
     private void displayHeartRate(final int bpm) {
         TextView textView = (TextView)findViewById(R.id.heartrateTextView);
         textView.setText(bpm + " bpm");
-        /*
-        ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        effect.setDuration(ANIMATION_DURATION);
-        effect.setRepeatMode(Animation.REVERSE);
-        effect.setRepeatCount(1);
-
-        View heartView = findViewById(R.id.imageview_heart);
-        heartView.startAnimation(effect);
-        */
     }
 
     private void displayBattery(final int value) {
         TextView textView = (TextView)findViewById(R.id.batteryLevelTextView);
         textView.setText(value+"%");
-        /*
-        ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        effect.setDuration(ANIMATION_DURATION);
-        effect.setRepeatMode(Animation.REVERSE);
-        effect.setRepeatCount(1);
-
-        View heartView = findViewById(R.id.imageview_heart);
-        heartView.startAnimation(effect);
-        */
     }
 
     private void scheduleUpdaters() {

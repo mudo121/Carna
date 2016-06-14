@@ -76,8 +76,6 @@ public class MainActivity extends AppCompatActivity {
             throw new AssertionError("Bluetooth is not accessible");
         }
 
-        //lockOrientation();
-
         sState = SCANNING;
         mBleScanner.startScan();
 
@@ -117,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         if (sState == SCANNING) {
             mBleScanner.stopScan();
             sState = IDLE;
-            //releaseOrientation();
         }
     }
 
