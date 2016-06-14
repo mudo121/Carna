@@ -1,14 +1,24 @@
 package de.eissler.moco.angelsensortestv1;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Button;
 import android.widget.TextView;
 
 import de.eissler.moco.angelsensortestv1.BLE.BleCharacteristic;
 import de.eissler.moco.angelsensortestv1.BLE.BleDevice;
-import de.eissler.moco.angelsensortestv1.BLE.Services.*;
-import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.*;
+import de.eissler.moco.angelsensortestv1.BLE.Services.SrvActivityMonitoring;
+import de.eissler.moco.angelsensortestv1.BLE.Services.SrvBattery;
+import de.eissler.moco.angelsensortestv1.BLE.Services.SrvHealthThermometer;
+import de.eissler.moco.angelsensortestv1.BLE.Services.SrvHeartRate;
+import de.eissler.moco.angelsensortestv1.BLE.Services.SrvWaveformSignal;
+import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChBatteryLevel;
+import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChHeartRateMeasurement;
+import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChOpticalWaveform;
+import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChStepCount;
+import de.eissler.moco.angelsensortestv1.BLE.Services.characteristics.ChTemperatureMeasurement;
 
 /**
  * Created by raphy-laptop on 31.05.2016.
@@ -23,15 +33,22 @@ public class HomeActivity extends Activity {
 
     private static final int RSSI_UPDATE_INTERVAL = 1000; // Milliseconds
 
+    private Button mOpenHeartRateButton;
     private TextView mTextView;
+    private GraphView mAccelerationWaveformView, mBlueOpticalWaveformView, mGreenOpticalWaveformView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        mTextView = (TextView)findViewById(R.id.angelAdressTextView);
+        mTextView = (TextView) findViewById(R.id.angelAdressTextView);
         mHandler = new Handler(this.getMainLooper());
+
+        mGreenOpticalWaveformView = (GraphView) findViewById(R.id.graph_green);
+        mGreenOpticalWaveformView.setStrokeColor(Color.GREEN);
+        mBlueOpticalWaveformView = (GraphView) findViewById(R.id.graph_blue);
+        mBlueOpticalWaveformView.setStrokeColor(Color.BLUE);
 
         mPeriodicReader = new Runnable() {
             @Override
@@ -45,7 +62,6 @@ public class HomeActivity extends Activity {
                 mHandler.postDelayed(mPeriodicReader, RSSI_UPDATE_INTERVAL);
             }
         };
-
     }
 
     protected void onStart() {
@@ -90,8 +106,11 @@ public class HomeActivity extends Activity {
         try {
             mBleDevice.registerServiceClass(SrvHeartRate.class);
             mBleDevice.registerServiceClass(SrvHealthThermometer.class);
-            //mBleDevice.registerServiceClass(SrvBattery.class);
+            mBleDevice.registerServiceClass(SrvBattery.class);
             mBleDevice.registerServiceClass(SrvActivityMonitoring.class);
+
+            mBleDevice.registerServiceClass(SrvWaveformSignal.class);
+
 
         } catch (NoSuchMethodException e) {
             throw new AssertionError();
@@ -110,13 +129,19 @@ public class HomeActivity extends Activity {
     private final BleDevice.LifecycleCallback mDeviceLifecycleCallback = new BleDevice.LifecycleCallback() {
         @Override
         public void onBluetoothServicesDiscovered(BleDevice device) {
+            // aktiviert den Heart Rate listener
             device.getService(SrvHeartRate.class).getHeartRateMeasurement().enableNotifications(mHeartRateListener);
-            //device.getService(SrvHeartRate.class).getHeartRateMeasurement().readValue(mHeartRateListener);
+
             device.getService(SrvHealthThermometer.class).getTemperatureMeasurement().enableNotifications(mTemperatureListener);
-            //device.getService(SrvBattery.class).getBatteryLevel().enableNotifications(mBatteryLevelListener);
+
+            device.getService(SrvBattery.class).getBatteryLevel().enableNotifications(mBatteryLevelListener);
+
             device.getService(SrvActivityMonitoring.class).getStepCount().enableNotifications(mStepCountListener);
             //mChAccelerationEnergyMagnitude = device.getService(SrvActivityMonitoring.class).getChAccelerationEnergyMagnitude();
             //Assert.assertNotNull(mChAccelerationEnergyMagnitude);
+
+            //device.getService(SrvWaveformSignal.class).getAccelerationWaveform().enableNotifications(mAccelerationWaveformListener);
+            device.getService(SrvWaveformSignal.class).getOpticalWaveform().enableNotifications(mOpticalWaveformListener);
         }
 
         @Override
@@ -143,6 +168,17 @@ public class HomeActivity extends Activity {
             };
 
 
+    private final BleCharacteristic.ValueReadyCallback<ChOpticalWaveform.OpticalWaveformValue> mOpticalWaveformListener = new BleCharacteristic.ValueReadyCallback<ChOpticalWaveform.OpticalWaveformValue>() {
+        @Override
+        public void onValueReady(ChOpticalWaveform.OpticalWaveformValue opticalWaveformValue) {
+            if (opticalWaveformValue != null && opticalWaveformValue.wave != null)
+                for (ChOpticalWaveform.OpticalSample item : opticalWaveformValue.wave) {
+                    mGreenOpticalWaveformView.addValue(item.green);
+                    mBlueOpticalWaveformView.addValue(item.blue);
+                }
+        }
+    };
+
     private final BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue> mTemperatureListener =
             new BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue>() {
                 @Override
@@ -150,6 +186,13 @@ public class HomeActivity extends Activity {
                     displayTemperature(temperature.getTemperatureMeasurement());
                 }
             };
+
+    private final BleCharacteristic.ValueReadyCallback<ChBatteryLevel.BatteryLevelValue> mBatteryLevelListener = new BleCharacteristic.ValueReadyCallback<ChBatteryLevel.BatteryLevelValue>() {
+        @Override
+        public void onValueReady(final ChBatteryLevel.BatteryLevelValue value) {
+            displayBattery(value.value);
+        }
+    };
 
     private final BleCharacteristic.ValueReadyCallback<ChHeartRateMeasurement.HeartRateMeasurementValue> mHeartRateListener = new BleCharacteristic.ValueReadyCallback<ChHeartRateMeasurement.HeartRateMeasurementValue>() {
         @Override
@@ -206,9 +249,9 @@ public class HomeActivity extends Activity {
         */
     }
 
-    private void displayBattery(final int bpm) {
-        TextView textView = (TextView)findViewById(R.id.heartrateTextView);
-        textView.setText(bpm + " bpm");
+    private void displayBattery(final int value) {
+        TextView textView = (TextView)findViewById(R.id.batteryLevelTextView);
+        textView.setText(value+"%");
         /*
         ScaleAnimation effect =  new ScaleAnimation(1f, 0.5f, 1f, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         effect.setDuration(ANIMATION_DURATION);
