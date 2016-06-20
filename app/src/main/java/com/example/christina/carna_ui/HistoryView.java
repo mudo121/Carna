@@ -18,27 +18,34 @@ public class HistoryView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_history);
 
-        imageView = (ImageView)findViewById(R.id.imageView);
-        listView = (ListView)findViewById(R.id.listView);
+        imageView = (ImageView)findViewById(R.id.historyImageView);
+        listView = (ListView)findViewById(R.id.historyListView);
 
         SensorType type = (SensorType)getIntent().getSerializableExtra("Type");
+        ListHistoryItemsAdapter adapter = new ListHistoryItemsAdapter(this,R.id.historyListView);
+        AngelMemoDataSource source = new AngelMemoDataSource(this);
+        source.open();
 
         switch (type) {
             case TEMPERATURE:
-                imageView.setImageDrawable(getDrawable(R.drawable.temperatur));
-
+                //Get Values
+                imageView.setImageResource(R.drawable.temperatur);
                 break;
             case STEPCOUNTER:
-                imageView.setImageDrawable(getDrawable(R.drawable.stepcounter));
+                //Get Values
+                imageView.setImageResource(R.drawable.stepcounter);
                 break;
             case HEARTRATE:
-                imageView.setImageDrawable(getDrawable(R.drawable.heart));
+                //Get Values
+                imageView.setImageResource(R.drawable.heart);
                 break;
-
             default:
                 // TODO: 20.06.2016
         }
+
+        listView.setAdapter(adapter);
 
     }
 }

@@ -23,7 +23,7 @@ public class homescreen extends AppCompatActivity {
     static private int sState = IDLE;
 
     private BleScanner mBleScanner;
-    private ListItemsAdapter mDeviceListAdapter;
+    private ListDeviceItemsAdapter mDeviceListAdapter;
     private Dialog mDeviceListDialog;
 
     @Override
@@ -31,10 +31,7 @@ public class homescreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homescreen);
 
-        mDeviceListAdapter = new ListItemsAdapter(this, R.layout.list_item);
-
-        ListHistoryItemsAdapter a = new ListHistoryItemsAdapter(this,R.layout.list_history_item);
-
+        mDeviceListAdapter = new ListDeviceItemsAdapter(this, R.layout.list_item);
 
         findViewById(R.id.searchDevicesButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +55,7 @@ public class homescreen extends AppCompatActivity {
         @Override
         public void onBluetoothDeviceFound(BluetoothDevice device) {
             if (device.getName() != null && device.getName().startsWith("Angel")) {
-                ListItem newDevice = new ListItem(device.getName(), device.getAddress(), device);
+                ListDeviceItem newDevice = new ListDeviceItem(device.getName(), device.getAddress(), device);
 
                 mDeviceListAdapter.add(newDevice);
                 mDeviceListAdapter.addItem(newDevice);

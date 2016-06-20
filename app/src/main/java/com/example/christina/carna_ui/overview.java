@@ -83,7 +83,6 @@ public class overview extends AppCompatActivity {
 
                 switch (s) {
                     case "Temperatur":
-
                         mTemperaturTextView.setText(""+intent.getFloatExtra("value",0));
                         break;
                     case "HeartRate":

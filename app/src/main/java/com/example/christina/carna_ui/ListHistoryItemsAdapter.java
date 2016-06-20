@@ -47,9 +47,9 @@ public class ListHistoryItemsAdapter extends ArrayAdapter<ListHistoryItem> {
         ListHistoryItem item = mItems.get(position);
         if (item != null) {
 
-            TextView acountNameView = (TextView) view.findViewById(R.id.item_value);
-            if (acountNameView != null) {
-                acountNameView.setText(item.getItemName());
+            TextView accountNameView = (TextView) view.findViewById(R.id.item_value);
+            if (accountNameView != null) {
+                accountNameView.setText(item.getItemName());
             }
 
             TextView itemKeyView = (TextView) view.findViewById(R.id.item_date);
@@ -57,10 +57,14 @@ public class ListHistoryItemsAdapter extends ArrayAdapter<ListHistoryItem> {
                 itemKeyView.setText(item.getItemKey());
             }
         }
-
         return view;
     }
 
+    @Override
+    public int getCount() {
+        // TODO Auto-generated method stub
+        return mItems.size();
+    }
 
     private LayoutInflater getInflator() {
         return (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

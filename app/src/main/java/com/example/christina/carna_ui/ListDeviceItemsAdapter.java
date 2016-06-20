@@ -1,4 +1,8 @@
-package de.eissler.moco.angelsensortestv1;
+package com.example.christina.carna_ui;
+
+/**
+ * Created by raphy-laptop on 20.06.2016.
+ */
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,20 +13,20 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ListItemsAdapter extends ArrayAdapter<ListItem> {
+public class ListDeviceItemsAdapter extends ArrayAdapter<ListDeviceItem> {
 
-    private final ArrayList<ListItem> mItems;
+    private final ArrayList<ListDeviceItem> mItems;
     private final Context mContext;
 
 
-    public ListItemsAdapter(Context context, int textViewResourceId) {
+    public ListDeviceItemsAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.mContext = context;
-        this.mItems = new ArrayList<ListItem>();
+        this.mItems = new ArrayList<ListDeviceItem>();
     }
 
 
-    public void addItem(ListItem item) {
+    public void addItem(ListDeviceItem item) {
         mItems.add(item);
     }
 
@@ -41,7 +45,7 @@ public class ListItemsAdapter extends ArrayAdapter<ListItem> {
         if (mItems.size() == 0) {
             return view;
         }
-        ListItem item = mItems.get(position);
+        ListDeviceItem item = mItems.get(position);
         if (item != null) {
 
             TextView acountNameView = (TextView) view.findViewById(R.id.item_name);

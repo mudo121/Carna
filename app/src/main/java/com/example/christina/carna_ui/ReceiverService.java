@@ -34,6 +34,7 @@ public class ReceiverService extends Service {
     private BleDevice mBleDevice;
     private Handler mHandler;
     private Runnable mPeriodicReader;
+    private AngelMemoDataSource source = null;
 
     private static final int RSSI_UPDATE_INTERVAL = 1000;
 
@@ -55,9 +56,9 @@ public class ReceiverService extends Service {
                 mHandler.postDelayed(mPeriodicReader, RSSI_UPDATE_INTERVAL);
             }
         };
-
+        source = new AngelMemoDataSource(this);
+        source.open();
         broadcaster = LocalBroadcastManager.getInstance(this);
-
     }
 
     @Override
