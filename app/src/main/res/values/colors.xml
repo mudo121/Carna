@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#c1c0c0</color>
+    <color name="colorPrimaryDark">#9e9e9e</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="angel_gold_color">#fff9e222</color>
+    <color name="headingColor">#32a310</color>
+    <color name="backgroundColor1">#f2fdf0</color>
 </resources>

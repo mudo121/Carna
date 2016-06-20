@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp">
+    <TextView
+        android:layout_weight="4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/selectUser"
+        android:id="@+id/textView3"
+        android:textSize="25sp"
+        android:textColor="@color/headingColor"/>
+
+    <ListView
+        android:layout_weight="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listView">
+
+    </ListView>
+
+    <Button
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:layout_weight="4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Login"
+        android:id="@+id/loginButton"
+        android:gravity="center"
+        android:textSize="18sp"/>
+
+    <Button
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:layout_weight="4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="add User"
+        android:id="@+id/addUserButton"
+        android:textSize="18sp"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>

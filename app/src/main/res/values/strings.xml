@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">AngelSensorTestV1</string>
+    <string name="app_name">Carna</string>
+    <string name="welcome">Welcome to \nCarna!</string>
+    <string name="info">Press down the button \nfor 2 seconds on the wristband</string>
+    <string name="searching">Searching for devices</string>
+    <string name="devicesFound">Following devices are found</string>
+    <string name="selectUser">Please select or add an user</string>
 </resources>

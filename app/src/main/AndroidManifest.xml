@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.eissler.moco.angelsensortestv1">
+    package="com.example.christina.carna_ui">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
-    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <!-- android.permission.INTERNET is needed for the simulator -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,22 +15,31 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".selectUser">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomeActivity">
+        <activity android:name=".heartscreen" />
+        <activity android:name=".homescreen" />
+        <activity android:name=".overview" />
 
-        </activity>
 
         <service
-            android:name="de.eissler.moco.angelsensortestv1.BLE.BleController"
+            android:name=".BLE.BleController"
             android:enabled="true" >
         </service>
+        <service android:name=".ReceiverService" >
+        </service>
 
+        <receiver android:name="ReceiverCall" >
+            <intent-filter>
+                <action android:name="com.android.techtrainner" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
