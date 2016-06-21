@@ -1,4 +1,4 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -19,6 +19,12 @@ import com.example.christina.carna_ui.BLE.Services.characteristics.ChHeartRateMe
 import com.example.christina.carna_ui.BLE.Services.characteristics.ChOpticalWaveform;
 import com.example.christina.carna_ui.BLE.Services.characteristics.ChStepCount;
 import com.example.christina.carna_ui.BLE.Services.characteristics.ChTemperatureMeasurement;
+import com.example.christina.carna_ui.database.AngelMemoDataSource;
+import com.example.christina.carna_ui.database.AngelMemoUser;
+import com.example.christina.carna_ui.enumclass.BroadcastIntentType;
+import com.example.christina.carna_ui.enumclass.BroadcastIntentValueType;
+import com.example.christina.carna_ui.enumclass.IntentValueType;
+import com.example.christina.carna_ui.enumclass.SensorType;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,6 +41,7 @@ public class ReceiverService extends Service {
     private Handler mHandler;
     private Runnable mPeriodicReader;
     private AngelMemoDataSource source = null;
+    private AngelMemoUser user;
 
     private static final int RSSI_UPDATE_INTERVAL = 1000;
 
@@ -66,12 +73,13 @@ public class ReceiverService extends Service {
         try {
             Bundle extras = intent.getExtras();
             assert(extras != null);
-            mBleDeviceAddress = extras.getString("ble_device_address");
+            mBleDeviceAddress = extras.getString(IntentValueType.BLE_DEVICE_ADDRESS.toString());
+            user = (AngelMemoUser) extras.getSerializable(IntentValueType.USER.toString());
             connect(mBleDeviceAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return START_STICKY;//super.onStartCommand(intent, flags, startId);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private Timer mTimer;
@@ -156,7 +164,8 @@ public class ReceiverService extends Service {
             new BleCharacteristic.ValueReadyCallback<ChStepCount.StepCountValue>() {
                 @Override
                 public void onValueReady(final ChStepCount.StepCountValue steps) {
-                    displayValues("StepCounter",steps.value);
+                    displayValues(SensorType.STEPCOUNTER.toString(),steps.value);
+                    source.addWert(user.getuserId(),source.getSensorByName(SensorType.STEPCOUNTER.toString()).getSensorId(),steps.value);
                 }
             };
 
@@ -169,6 +178,7 @@ public class ReceiverService extends Service {
                 for (ChOpticalWaveform.OpticalSample item : opticalWaveformValue.wave) {
                     //mGreenOpticalWaveformView.addValue(item.green);
                     //mBlueOpticalWaveformView.addValue(item.blue);
+                    //// TODO: 21.06.2016  
                 }
         }
     };
@@ -178,7 +188,8 @@ public class ReceiverService extends Service {
             new BleCharacteristic.ValueReadyCallback<ChTemperatureMeasurement.TemperatureMeasurementValue>() {
                 @Override
                 public void onValueReady(final ChTemperatureMeasurement.TemperatureMeasurementValue temperature) {
-                    displayValues("Temperatur",temperature.getTemperatureMeasurement());
+                    displayValues(SensorType.TEMPERATURE.toString(),temperature.getTemperatureMeasurement());
+                    source.addWert(user.getuserId(),source.getSensorByName(SensorType.TEMPERATURE.toString()).getSensorId(),temperature.getTemperatureMeasurement());
                 }
             };
 
@@ -186,7 +197,7 @@ public class ReceiverService extends Service {
     private final BleCharacteristic.ValueReadyCallback<ChBatteryLevel.BatteryLevelValue> mBatteryLevelListener = new BleCharacteristic.ValueReadyCallback<ChBatteryLevel.BatteryLevelValue>() {
         @Override
         public void onValueReady(final ChBatteryLevel.BatteryLevelValue value) {
-            displayValues("BatteryLevel",value.value);
+            displayValues(SensorType.BATTERY.toString(),value.value);
         }
     };
 
@@ -194,14 +205,15 @@ public class ReceiverService extends Service {
     private final BleCharacteristic.ValueReadyCallback<ChHeartRateMeasurement.HeartRateMeasurementValue> mHeartRateListener = new BleCharacteristic.ValueReadyCallback<ChHeartRateMeasurement.HeartRateMeasurementValue>() {
         @Override
         public void onValueReady(final ChHeartRateMeasurement.HeartRateMeasurementValue hrMeasurement) {
-            displayValues("HeartRate",hrMeasurement.getHeartRateMeasurement());
+            displayValues(SensorType.HEARTRATE.toString(),hrMeasurement.getHeartRateMeasurement());
+            source.addWert(user.getuserId(),source.getSensorByName(SensorType.HEARTRATE.toString()).getSensorId(),hrMeasurement.getHeartRateMeasurement());
         }
     };
 
     private void displayValues(String sensorType, final float value) {
-        Intent intent = new Intent("displayValues");
-        intent.putExtra("value",value);
-        intent.putExtra("SensorType",sensorType);
+        Intent intent = new Intent(BroadcastIntentType.DISPLAY_VALUES.toString());
+        intent.putExtra(BroadcastIntentValueType.SENSOR_VALUE.toString(),value);
+        intent.putExtra(IntentValueType.SENSORTYPE.toString(),sensorType);
         broadcaster.sendBroadcast(intent);
 }
 

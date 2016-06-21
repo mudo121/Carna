@@ -1,4 +1,4 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.listviewadapter;
 
 import android.bluetooth.BluetoothDevice;
 

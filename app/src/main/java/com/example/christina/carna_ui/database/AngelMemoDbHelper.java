@@ -1,10 +1,13 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.example.christina.carna_ui.enumclass.SensorType;
+
 /**
  * Created by oguzbinbir on 07.06.16.
  */
@@ -17,21 +20,21 @@ public class AngelMemoDbHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
 
     //Table Werte
-    public static final String TABLE_ANGEL_WERTE = "angelmemo_Werte";
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_ID_USER = "id_user";
-    public static final String COLUMN_ID_SENSOR = "id_sensor";
-    public static final String COLUMN_WERT = "Wert";
-    public static final String COLUMN_DATUM = "Datum";
+    public static final String TABLE_ANGEL_WERTE = "sensor_readed_values";
+    public static final String COLUMN_ID = "value_id";
+    public static final String COLUMN_ID_USER = "value_user_id";
+    public static final String COLUMN_ID_SENSOR = "value_sensor_id";
+    public static final String COLUMN_VALUE = "value";
+    public static final String COLUMN_DATE = "date";
 
 
     //Table Sensoren
-    public static final String TABLE_ANGEL_SENSOREN = "angelmemo_Sensoren";
-    public static final String COLUMN_SENSOREN_NAME = "Name";
+    public static final String TABLE_ANGEL_SENSOREN = "sensors";
+    public static final String COLUMN_SENSOREN_NAME = "sensor_name";
 
     //Table User
     public static final String TABLE_ANGEL_USER = "angelmemo_User";
-    public static final String COLUMN_USER_NAME = "Name";
+    public static final String COLUMN_USER_NAME = "user_name";
 
 
     //SQL Statemant creating Table Werte
@@ -39,20 +42,20 @@ public class AngelMemoDbHelper extends SQLiteOpenHelper {
             "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_ID_USER + " INTEGER NOT NULL REFERENCES " + TABLE_ANGEL_USER + "(" + COLUMN_ID + ") ON DELETE CASCADE, " +
             COLUMN_ID_SENSOR + " INTEGER NOT NULL, " +
-            COLUMN_WERT + " TEXT NOT NULL, " +
-            COLUMN_DATUM + "  TIMESTAMP DEFAULT CURRENT_TIMESTAMP TEXT NOT NULL);";
+            COLUMN_VALUE + " REAL NOT NULL, " +
+            COLUMN_DATE + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);";
     //Timestamp updated
 
     //SQL Statemant creating Table Sensoren
     public static final String SQL_CREATE_TABLE_SENSOREN = "CREATE TABLE " + TABLE_ANGEL_SENSOREN +
             "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_SENSOREN_NAME + " TEXT NOT NULL);";
+            COLUMN_SENSOREN_NAME + " TEXT UNIQUE NOT NULL);";
 
 
     //SQL Statemant creating Table User
     public static final String SQL_CREATE_TABLE_USER = "CREATE TABLE " + TABLE_ANGEL_USER +
             "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_USER_NAME + "PRIMARY KEY TEXT NOT NULL);";
+            COLUMN_USER_NAME + " TEXT UNIQUE NOT NULL);";
 
 
     public AngelMemoDbHelper(Context context) {
@@ -77,11 +80,11 @@ public class AngelMemoDbHelper extends SQLiteOpenHelper {
             db.execSQL(SQL_CREATE_TABLE_SENSOREN);
 
             ContentValues values = new ContentValues();
-            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME,"Puls");
+            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME, SensorType.HEARTRATE.toString());
             db.insert(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN,null,values);
-            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME,"Temperatur");
+            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME, SensorType.TEMPERATURE.toString());
             db.insert(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN,null,values);
-            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME,"Schritte");
+            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME, SensorType.STEPCOUNTER.toString());
             db.insert(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN,null,values);
         }
         catch (Exception ex) {

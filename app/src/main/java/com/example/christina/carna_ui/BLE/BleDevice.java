@@ -53,7 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import com.example.christina.carna_ui.ReceiverService;
+import com.example.christina.carna_ui.service.ReceiverService;
 
 
 /**

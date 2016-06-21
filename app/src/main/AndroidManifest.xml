@@ -11,30 +11,30 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/carna_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".selectUser">
+        <activity android:name=".activity.UserSelectionActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".homescreen" />
-        <activity android:name=".HistoryView" />
-        <activity android:name=".overview" />
+        <activity android:name=".activity.ScanActivity" />
+        <activity android:name=".activity.HistoryViewActivity" />
+        <activity android:name=".activity.OverviewActivity" />
 
 
         <service
             android:name=".BLE.BleController"
             android:enabled="true" >
         </service>
-        <service android:name=".ReceiverService" >
+        <service android:name=".service.ReceiverService" >
         </service>
 
-        <receiver android:name="ReceiverCall" >
+        <receiver android:name=".service.ReceiverCall" >
             <intent-filter>
                 <action android:name="com.android.techtrainner" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

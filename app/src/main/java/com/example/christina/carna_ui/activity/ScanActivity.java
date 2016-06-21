@@ -1,4 +1,4 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.activity;
 
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
@@ -11,10 +11,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.christina.carna_ui.BLE.BleScanner;
+import com.example.christina.carna_ui.R;
+import com.example.christina.carna_ui.database.AngelMemoUser;
+import com.example.christina.carna_ui.enumclass.IntentValueType;
+import com.example.christina.carna_ui.listviewadapter.ListDeviceItem;
+import com.example.christina.carna_ui.listviewadapter.ListDeviceItemsAdapter;
 
-import junit.framework.Assert;
-
-public class homescreen extends AppCompatActivity {
+public class ScanActivity extends AppCompatActivity {
 
     private static final int IDLE = 0;
     private static final int SCANNING = 1;
@@ -25,6 +28,7 @@ public class homescreen extends AppCompatActivity {
     private BleScanner mBleScanner;
     private ListDeviceItemsAdapter mDeviceListAdapter;
     private Dialog mDeviceListDialog;
+    private AngelMemoUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +97,12 @@ public class homescreen extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View item, int position, long id) {
                 stopScan();
                 mDeviceListDialog.dismiss();
-
                 BluetoothDevice bluetoothDevice = mDeviceListAdapter.getItem(position).getBluetoothDevice();
-                Assert.assertTrue(bluetoothDevice != null);
-                Intent intent = new Intent(parent.getContext(), overview.class);
-                intent.putExtra("ble_device_address", bluetoothDevice.getAddress());
+                Bundle b = getIntent().getExtras();
+                user = (AngelMemoUser) b.getSerializable(IntentValueType.USER.toString());
+                Intent intent = new Intent(parent.getContext(), OverviewActivity.class);
+                intent.putExtra(IntentValueType.BLE_DEVICE_ADDRESS.toString(), bluetoothDevice.getAddress());
+                intent.putExtra(IntentValueType.USER.toString(), user);
                 startActivity(intent);
             }
         });

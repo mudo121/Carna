@@ -1,4 +1,4 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.listviewadapter;
 
 /**
  * Created by raphy-laptop on 20.06.2016.
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.example.christina.carna_ui.R;
 
 import java.util.ArrayList;
 

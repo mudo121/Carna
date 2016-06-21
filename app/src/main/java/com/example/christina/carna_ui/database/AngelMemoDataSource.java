@@ -1,4 +1,4 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.database;
 
 /**
  * Created by oguzbinbir on 07.06.16.
@@ -204,8 +204,7 @@ public class AngelMemoDataSource {
     public AngelMemoSensor getSensorByName(String name){
 
         try {
-            String[] whereArgs = new String[]{name};
-            Cursor cursor = database.query(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN, null, AngelMemoDbHelper.COLUMN_SENSOREN_NAME + " = ?", whereArgs, null, null, null);
+            Cursor cursor = database.query(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN, null, "'"+name + "' = " + AngelMemoDbHelper.COLUMN_SENSOREN_NAME, null, null, null, null);
             cursor.moveToFirst();
             AngelMemoSensor angelMemoSensor;
             angelMemoSensor = cursorToAngelMemoSensor(cursor);
@@ -237,13 +236,12 @@ public class AngelMemoDataSource {
         }
     }
 
-    public void addWert(int userId, int sensorId, String wert, String datum){
+    public void addWert(int userId, int sensorId, float wert){
         try{
             ContentValues values = new ContentValues();
             values.put(AngelMemoDbHelper.COLUMN_ID_USER, userId);
             values.put(AngelMemoDbHelper.COLUMN_ID_SENSOR, sensorId);
-            values.put(AngelMemoDbHelper.COLUMN_WERT, wert);
-            values.put(AngelMemoDbHelper.COLUMN_DATUM, datum);
+            values.put(AngelMemoDbHelper.COLUMN_VALUE, wert);
 
             long erfolgreich = database.insert(AngelMemoDbHelper.TABLE_ANGEL_WERTE, null, values);
 
@@ -286,8 +284,8 @@ public class AngelMemoDataSource {
             int idIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_ID);
             int idUserIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_ID_USER);
             int idSensorIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_ID_SENSOR);
-            int idWertIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_WERT);
-            int idDatumIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_DATUM);
+            int idWertIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_VALUE);
+            int idDatumIndex = cursor.getColumnIndex(AngelMemoDbHelper.COLUMN_DATE);
 
             int id_wert = cursor.getInt(idIndex);
             int id_user = cursor.getInt(idUserIndex);
@@ -304,4 +302,5 @@ public class AngelMemoDataSource {
             return null;
         }
     }
+
 }

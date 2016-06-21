@@ -1,10 +1,12 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.database;
+
+import java.io.Serializable;
 
 /**
  * Created by oguzbinbir on 14.06.16.
  */
 
-public class AngelMemoWerte {
+public class AngelMemoWerte implements Serializable {
 
     private int wertId;
     private int userId;

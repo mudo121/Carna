@@ -1,11 +1,13 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.database;
+
+import java.io.Serializable;
 
 /**
  * Created by oguzbinbir on 14.06.16.
  */
 
 
-public class AngelMemoUser {
+public class AngelMemoUser implements Serializable {
 
     private int userId;
     private String userName;

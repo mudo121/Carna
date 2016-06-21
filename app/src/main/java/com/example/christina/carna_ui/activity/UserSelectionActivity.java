@@ -1,4 +1,4 @@
-package com.example.christina.carna_ui;
+package com.example.christina.carna_ui.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,12 +13,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.christina.carna_ui.R;
+import com.example.christina.carna_ui.database.AngelMemoDataSource;
+import com.example.christina.carna_ui.database.AngelMemoUser;
+import com.example.christina.carna_ui.enumclass.IntentValueType;
+
 import java.util.List;
 
 /**
  * Created by raphy-laptop on 20.06.2016.
  */
-public class selectUser extends AppCompatActivity {
+public class UserSelectionActivity extends AppCompatActivity {
 
     Button addUserButton;
     private ArrayAdapter<String> listAdapter;
@@ -42,9 +47,9 @@ public class selectUser extends AppCompatActivity {
         addUserButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater layoutInflater = LayoutInflater.from(selectUser.this);
+                LayoutInflater layoutInflater = LayoutInflater.from(UserSelectionActivity.this);
                 View promptView = layoutInflater.inflate(R.layout.prompt_add_user, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(selectUser.this);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(UserSelectionActivity.this);
                 alertDialogBuilder.setView(promptView);
 
                 final EditText editText = (EditText) promptView.findViewById(R.id.edittext);
@@ -70,15 +75,14 @@ public class selectUser extends AppCompatActivity {
                 alert.show();
             }
         });
-        //Intent searchDevices = new Intent(getApplicationContext(), homescreen.class);
-        //startActivity(searchDevices);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View item, int position, long id) {
                 String username = listAdapter.getItem(position);
-                Intent intent = new Intent(parent.getContext(), homescreen.class);
-                intent.putExtra("username", username);
+                AngelMemoUser user = source.getUserByName(username);
+                Intent intent = new Intent(parent.getContext(), ScanActivity.class);
+                intent.putExtra(IntentValueType.USER.toString(), user);
                 startActivity(intent);
             }
         });
@@ -86,9 +90,9 @@ public class selectUser extends AppCompatActivity {
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View item, int position, long id) {
-                LayoutInflater layoutInflater = LayoutInflater.from(selectUser.this);
+                LayoutInflater layoutInflater = LayoutInflater.from(UserSelectionActivity.this);
                 View promptView = layoutInflater.inflate(R.layout.prompt_delete_user, null);
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(selectUser.this);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(UserSelectionActivity.this);
                 alertDialogBuilder.setView(promptView);
 
                 final int itemPos = position;
