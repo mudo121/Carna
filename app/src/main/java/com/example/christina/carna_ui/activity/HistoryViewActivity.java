@@ -37,7 +37,7 @@ public class HistoryViewActivity extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         SensorType type = (SensorType)getIntent().getSerializableExtra(IntentValueType.SENSORTYPE.toString());
 
-        if(SensorType.HEARTRATE == type){
+        if(type == SensorType.HEARTRATE){
             setContentView(R.layout.activity_history_heartrate);
             receiver = new BroadcastReceiver() {
                 @Override
