@@ -29,9 +29,13 @@
 
         <service
             android:name=".BLE.BleController"
-            android:enabled="true" >
+            android:enabled="true"
+            >
         </service>
-        <service android:name=".service.ReceiverService" >
+        <service
+            android:name=".service.ReceiverService"
+            android:enabled="true"
+            >
         </service>
 
         <receiver android:name=".service.ReceiverCall" >

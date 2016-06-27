@@ -126,7 +126,6 @@ public class OverviewActivity extends AppCompatActivity {
                     case BATTERY:
                         mBatteryTextView.setText(""+(int)intent.getFloatExtra(BroadcastIntentValueType.SENSOR_VALUE.toString(),0) + "%");
                         break;
-
                     default:
                         Toast.makeText(OverviewActivity.this, "Unbekannte Sensor", Toast.LENGTH_SHORT).show();
                 }

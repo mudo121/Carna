@@ -1,6 +1,7 @@
 package com.example.christina.carna_ui.activity;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,14 +27,14 @@ import java.util.List;
 public class UserSelectionActivity extends AppCompatActivity {
 
     Button addUserButton;
-    private ArrayAdapter<String> listAdapter;
-    AngelMemoDataSource source = null;
+        private ArrayAdapter<String> listAdapter;
+        AngelMemoDataSource source = null;
+        NotificationManager mNotificationManager;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_user);
-
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_select_user);
         source= new AngelMemoDataSource(this);
         source.open();
 
@@ -123,6 +124,14 @@ public class UserSelectionActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //unscheduleUpdaters();
+        //mBleDevice.disconnect();
+    }
+
 
     private void addUser(String username){
         AngelMemoDataSource source = new AngelMemoDataSource(this);

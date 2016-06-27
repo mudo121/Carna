@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom_notification"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/heart_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/heart"
+            />
+
+        <TextView
+            android:layout_weight="3"
+            android:gravity="center"
+            android:id="@+id/heart_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="NONE"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/temperature_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/temperatur"
+            />
+
+        <TextView
+            android:layout_weight="3"
+            android:gravity="center"
+            android:id="@+id/temperature_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="NONE"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/stepcounter_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/stepcounter"
+            />
+
+        <TextView
+            android:layout_weight="3"
+            android:gravity="center"
+            android:id="@+id/stepcounter_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="NONE"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1">
+        <ImageView
+            android:layout_weight="1"
+            android:id="@+id/battery_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/carna_icon"
+            />
+
+        <TextView
+            android:layout_weight="3"
+            android:id="@+id/battery_text"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/notification_title"
+            android:text="NONE"
+            />
+    </LinearLayout>
+
+</LinearLayout>

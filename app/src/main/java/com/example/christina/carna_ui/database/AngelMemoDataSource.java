@@ -3,11 +3,14 @@ package com.example.christina.carna_ui.database;
 /**
  * Created by oguzbinbir on 07.06.16.
  */
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.content.ContentValues;
-import android.database.Cursor;
+
+import com.example.christina.carna_ui.enumclass.SensorType;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -255,12 +258,30 @@ public class AngelMemoDataSource {
             Log.d(LOG_TAG, "Fehler addWert: " + e.getMessage());
         }
     }
-    public List<AngelMemoWerte> getWerte(int userId, int sensorId){
+    public List<AngelMemoWerte> getWerte(int userId, AngelMemoSensor sensor){
         try {
             List<AngelMemoWerte> angelMemoWerteList = new ArrayList<>();
 
-            Cursor cursor = database.query(AngelMemoDbHelper.TABLE_ANGEL_WERTE,
-                    null, AngelMemoDbHelper.COLUMN_ID_USER + " = " + userId + " AND " + AngelMemoDbHelper.COLUMN_ID_SENSOR + " = " + sensorId, null, null, null, null);
+            //Cursor cursor = database.query(AngelMemoDbHelper.TABLE_ANGEL_WERTE,
+                    //null, AngelMemoDbHelper.COLUMN_ID_USER + " = " + userId + " AND " + AngelMemoDbHelper.COLUMN_ID_SENSOR + " = " + sensor.getSensorId(), null, null, null, null);
+            String sqlString = "";
+            switch (SensorType.valueOf(sensor.getSensorName())){
+                case HEARTRATE:
+                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR;
+                    break;
+                case TEMPERATURE:
+                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR;
+                    break;
+                case STEPCOUNTER:
+                    sqlString = "select w."+AngelMemoDbHelper.COLUMN_ID+",w."+AngelMemoDbHelper.COLUMN_ID_USER+",w."+AngelMemoDbHelper.COLUMN_ID_SENSOR+",max(w."+AngelMemoDbHelper.COLUMN_VALUE+"),strftime('%Y-%m-%d',w." + AngelMemoDbHelper.COLUMN_DATE+") from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR + " GROUP BY strftime('%Y-%m-%d'," + AngelMemoDbHelper.COLUMN_DATE+")";
+                    break;
+                case BATTERY:
+                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR;
+                    break;
+
+            }
+
+            Cursor cursor = database.rawQuery(sqlString,null);
 
             cursor.moveToFirst();
             AngelMemoWerte angelMemoWerte;

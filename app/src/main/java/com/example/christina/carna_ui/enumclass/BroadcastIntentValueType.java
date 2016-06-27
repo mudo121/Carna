@@ -5,7 +5,8 @@ package com.example.christina.carna_ui.enumclass;
  */
 public enum BroadcastIntentValueType {
     SENSOR_VALUE,
-    OPTICAL_BLUE,
+    OPTICAL_SENSOR_COLOR,
+    OPTICAL_VALUE,
     OPTICAL_GREEN,
-    OPTICAL_VALUE
+    OPTICAL_BLUE
 }

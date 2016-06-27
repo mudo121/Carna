@@ -26,9 +26,6 @@ import com.example.christina.carna_ui.enumclass.BroadcastIntentValueType;
 import com.example.christina.carna_ui.enumclass.IntentValueType;
 import com.example.christina.carna_ui.enumclass.SensorType;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 /**
  * Created by raphy-laptop on 20.06.2016.
  */
@@ -81,20 +78,6 @@ public class ReceiverService extends Service {
         }
         return super.onStartCommand(intent, flags, startId);
     }
-
-    private Timer mTimer;
-
-    TimerTask timerTask = new TimerTask() {
-
-        @Override
-        public void run() {
-
-
-
-//            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-//            v.vibrate(500);
-        }
-    };
 
     private void connect(String deviceAddress) {
         // A device has been chosen from the list. Create an instance of BleDevice,
@@ -176,9 +159,8 @@ public class ReceiverService extends Service {
         public void onValueReady(ChOpticalWaveform.OpticalWaveformValue opticalWaveformValue) {
             if (opticalWaveformValue != null && opticalWaveformValue.wave != null)
                 for (ChOpticalWaveform.OpticalSample item : opticalWaveformValue.wave) {
-                    //mGreenOpticalWaveformView.addValue(item.green);
-                    //mBlueOpticalWaveformView.addValue(item.blue);
-                    //// TODO: 21.06.2016  
+                    displayOpticalwave(BroadcastIntentValueType.OPTICAL_GREEN.toString(),item.green);
+                    displayOpticalwave(BroadcastIntentValueType.OPTICAL_BLUE.toString(),item.blue);
                 }
         }
     };
@@ -198,6 +180,7 @@ public class ReceiverService extends Service {
         @Override
         public void onValueReady(final ChBatteryLevel.BatteryLevelValue value) {
             displayValues(SensorType.BATTERY.toString(),value.value);
+            source.addWert(user.getuserId(),source.getSensorByName(SensorType.BATTERY.toString()).getSensorId(),value.value);
         }
     };
 
@@ -215,7 +198,14 @@ public class ReceiverService extends Service {
         intent.putExtra(BroadcastIntentValueType.SENSOR_VALUE.toString(),value);
         intent.putExtra(IntentValueType.SENSORTYPE.toString(),sensorType);
         broadcaster.sendBroadcast(intent);
-}
+    }
+
+    private void displayOpticalwave(String opticalwaveType, final int value) {
+        Intent intent = new Intent(BroadcastIntentType.OPTICAL_WAVE.toString());
+        intent.putExtra(BroadcastIntentValueType.OPTICAL_SENSOR_COLOR.toString(), opticalwaveType);
+        intent.putExtra(BroadcastIntentValueType.OPTICAL_VALUE.toString(),value);
+        broadcaster.sendBroadcast(intent);
+    }
 
     private void scheduleUpdaters() {
         mHandler.post(mPeriodicReader);
@@ -232,14 +222,9 @@ public class ReceiverService extends Service {
     }
 
     public void onDestroy() {
-        try {
-            mTimer.cancel();
-            timerTask.cancel();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         Intent intent = new Intent("com.android.techtrainner");
-        intent.putExtra("ble_device_address", mBleDeviceAddress);
+        intent.putExtra(IntentValueType.BLE_DEVICE_ADDRESS.toString(), mBleDeviceAddress);
+        intent.putExtra(IntentValueType.USER.toString(), user);
         sendBroadcast(intent);
     }
 

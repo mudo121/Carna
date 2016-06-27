@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.christina.carna_ui.database.AngelMemoUser;
 import com.example.christina.carna_ui.enumclass.IntentValueType;
 
 /**
@@ -17,9 +18,11 @@ public class ReceiverCall extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         assert(extras != null);
         String mBleDeviceAddress = extras.getString(IntentValueType.BLE_DEVICE_ADDRESS.toString());
+        AngelMemoUser user = (AngelMemoUser) extras.getSerializable(IntentValueType.USER.toString());
 
         Intent intentCall = new Intent(context,ReceiverService.class);
         intentCall.putExtra(IntentValueType.BLE_DEVICE_ADDRESS.toString(), mBleDeviceAddress);
+        intentCall.putExtra(IntentValueType.USER.toString(), user);
         context.startService(intentCall);
     }
 

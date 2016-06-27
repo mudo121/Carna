@@ -3,7 +3,9 @@ package com.example.christina.carna_ui.activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,6 +31,8 @@ public class HistoryViewActivity extends AppCompatActivity {
     ImageView imageView;
     ListView listView;
     BroadcastReceiver receiver;
+    OpticalGraphView greenGraph;
+    OpticalGraphView blueGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,20 +43,22 @@ public class HistoryViewActivity extends AppCompatActivity {
 
         if(SensorType.HEARTRATE == type){
             setContentView(R.layout.activity_history_heartrate);
+            greenGraph = (OpticalGraphView) findViewById(R.id.graph_blue);
+            blueGraph = (OpticalGraphView) findViewById(R.id.graph_green);
             receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    BroadcastIntentValueType waveform = BroadcastIntentValueType.valueOf(intent.getStringExtra(BroadcastIntentType.OPTICAL_WAVE.toString()));
+                    BroadcastIntentValueType waveform = BroadcastIntentValueType.valueOf(intent.getStringExtra(BroadcastIntentValueType.OPTICAL_SENSOR_COLOR.toString()));
                     OpticalGraphView o = null;
                     switch(waveform){
                         case OPTICAL_BLUE:
-                            o = (OpticalGraphView) findViewById(R.id.graph_blue);
+                            o = blueGraph;
                             break;
                         case OPTICAL_GREEN:
-                            o = (OpticalGraphView) findViewById(R.id.graph_green);
+                            o = greenGraph;
                             break;
                     }
-                    o.addValue(intent.getFloatExtra(BroadcastIntentValueType.OPTICAL_VALUE.toString(),0));
+                    o.addValue((float)intent.getIntExtra(BroadcastIntentValueType.OPTICAL_VALUE.toString(),0));
                 }
             };
         }else {
@@ -71,20 +77,25 @@ public class HistoryViewActivity extends AppCompatActivity {
             case TEMPERATURE:
                 //Get Values
                 imageView.setImageResource(R.drawable.temperatur);
-                values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.TEMPERATURE.toString()).getSensorId());
+                values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.TEMPERATURE.toString()));
                 break;
             case STEPCOUNTER:
                 //Get Values
                 imageView.setImageResource(R.drawable.stepcounter);
-                values =source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.STEPCOUNTER.toString()).getSensorId());
+                values =source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.STEPCOUNTER.toString()));
                 break;
             case HEARTRATE:
                 //Get Values
                 imageView.setImageResource(R.drawable.heart);
-                values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.HEARTRATE.toString()).getSensorId());
+                values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.HEARTRATE.toString()));
+                break;
+            case BATTERY:
+                //Get Values
+                imageView.setImageResource(R.drawable.battery);
+                values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.BATTERY.toString()));
                 break;
             default:
-                // TODO: 20.06.2016
+                break;
         }
         if(values != null){
             for(int i = 0; i < values.size(); i++){
@@ -92,5 +103,13 @@ public class HistoryViewActivity extends AppCompatActivity {
             }
         }
         listView.setAdapter(adapter);
+    }
+
+    protected void onStart() {
+        super.onStart();
+
+        LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
+                new IntentFilter(BroadcastIntentType.OPTICAL_WAVE.toString())
+        );
     }
 }

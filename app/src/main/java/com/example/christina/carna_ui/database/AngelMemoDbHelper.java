@@ -86,6 +86,9 @@ public class AngelMemoDbHelper extends SQLiteOpenHelper {
             db.insert(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN,null,values);
             values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME, SensorType.STEPCOUNTER.toString());
             db.insert(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN,null,values);
+            values.put(AngelMemoDbHelper.COLUMN_SENSOREN_NAME, SensorType.BATTERY.toString());
+            db.insert(AngelMemoDbHelper.TABLE_ANGEL_SENSOREN,null,values);
+
         }
         catch (Exception ex) {
             Log.e(LOG_TAG, "Fehler beim Anlegen der Tabelle: " + ex.getMessage());
