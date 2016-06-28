@@ -267,18 +267,26 @@ public class AngelMemoDataSource {
             String sqlString = "";
             switch (SensorType.valueOf(sensor.getSensorName())){
                 case HEARTRATE:
-                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR;
+                    sqlString = "select *,avg(v."+AngelMemoDbHelper.COLUMN_VALUE+"), strftime('%Y-%m-%d',v."+AngelMemoDbHelper.COLUMN_DATE+") " +
+                            "from "+AngelMemoDbHelper.TABLE_ANGEL_WERTE+" v " +
+                            "where v."+AngelMemoDbHelper.COLUMN_ID_SENSOR+" = "+sensor.getSensorId()+" " +
+                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date";
                     break;
                 case TEMPERATURE:
-                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR;
+                    sqlString = "select *,avg(v."+AngelMemoDbHelper.COLUMN_VALUE+"), strftime('%Y-%m-%d',v."+AngelMemoDbHelper.COLUMN_DATE+") " +
+                            "from "+AngelMemoDbHelper.TABLE_ANGEL_WERTE+" v " +
+                            "where v."+AngelMemoDbHelper.COLUMN_ID_SENSOR+" = "+sensor.getSensorId()+" " +
+                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date";
                     break;
                 case STEPCOUNTER:
-                    sqlString = "select w."+AngelMemoDbHelper.COLUMN_ID+",w."+AngelMemoDbHelper.COLUMN_ID_USER+",w."+AngelMemoDbHelper.COLUMN_ID_SENSOR+",max(w."+AngelMemoDbHelper.COLUMN_VALUE+"),strftime('%Y-%m-%d',w." + AngelMemoDbHelper.COLUMN_DATE+") from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR + " GROUP BY strftime('%Y-%m-%d'," + AngelMemoDbHelper.COLUMN_DATE+")";
+                    sqlString = "select *,max(v."+AngelMemoDbHelper.COLUMN_VALUE+"), strftime('%Y-%m-%d',v."+AngelMemoDbHelper.COLUMN_DATE+") " +
+                            "from "+AngelMemoDbHelper.TABLE_ANGEL_WERTE+" v " +
+                            "where v."+AngelMemoDbHelper.COLUMN_ID_SENSOR+" = "+sensor.getSensorId()+" " +
+                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date";
                     break;
                 case BATTERY:
-                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " w, " + AngelMemoDbHelper.TABLE_ANGEL_SENSOREN + " s where "+ sensor.getSensorId() + "=w." + AngelMemoDbHelper.COLUMN_ID_SENSOR;
+                    sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " v where "+ sensor.getSensorId() + "=v." + AngelMemoDbHelper.COLUMN_ID_SENSOR + " order by v.date DESC";
                     break;
-
             }
 
             Cursor cursor = database.rawQuery(sqlString,null);

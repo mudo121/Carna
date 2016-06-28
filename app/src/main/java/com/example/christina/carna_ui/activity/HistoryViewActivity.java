@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -41,10 +42,19 @@ public class HistoryViewActivity extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         SensorType type = (SensorType)getIntent().getSerializableExtra(IntentValueType.SENSORTYPE.toString());
 
-        if(SensorType.HEARTRATE == type){
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // nothing
+            }
+        };
+
+        if(type == SensorType.HEARTRATE){
             setContentView(R.layout.activity_history_heartrate);
             greenGraph = (OpticalGraphView) findViewById(R.id.graph_blue);
             blueGraph = (OpticalGraphView) findViewById(R.id.graph_green);
+            blueGraph.setStrokeColor(Color.BLUE);
+            greenGraph.setStrokeColor(Color.GREEN);
             receiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
