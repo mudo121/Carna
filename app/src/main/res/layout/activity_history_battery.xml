@@ -19,17 +19,22 @@
         android:layout_height="match_parent">
     </ListView>
 
+    <TextView
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Battery level over time"
+        android:gravity="center"/>
 
     <com.example.christina.carna_ui.customview.BatteryLevelGraphView
         android:background="@drawable/border"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="5"
         android:id="@+id/graph_battery"
         android:padding="4dp"
         />
-
-
 
 </LinearLayout>

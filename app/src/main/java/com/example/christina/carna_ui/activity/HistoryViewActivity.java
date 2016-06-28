@@ -55,8 +55,8 @@ public class HistoryViewActivity extends AppCompatActivity {
 
         if(type == SensorType.HEARTRATE) {
             setContentView(R.layout.activity_history_heartrate);
-            greenGraph = (OpticalGraphView) findViewById(R.id.graph_blue);
-            blueGraph = (OpticalGraphView) findViewById(R.id.graph_green);
+            greenGraph = (OpticalGraphView) findViewById(R.id.graph_green);
+            blueGraph = (OpticalGraphView) findViewById(R.id.graph_blue);
             blueGraph.setStrokeColor(Color.BLUE);
             greenGraph.setStrokeColor(Color.GREEN);
             receiver = new BroadcastReceiver() {
