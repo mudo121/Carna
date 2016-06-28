@@ -270,19 +270,19 @@ public class AngelMemoDataSource {
                     sqlString = "select *,avg(v."+AngelMemoDbHelper.COLUMN_VALUE+"), strftime('%Y-%m-%d',v."+AngelMemoDbHelper.COLUMN_DATE+") " +
                             "from "+AngelMemoDbHelper.TABLE_ANGEL_WERTE+" v " +
                             "where v."+AngelMemoDbHelper.COLUMN_ID_SENSOR+" = "+sensor.getSensorId()+" " +
-                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date";
+                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date DESC";
                     break;
                 case TEMPERATURE:
                     sqlString = "select *,avg(v."+AngelMemoDbHelper.COLUMN_VALUE+"), strftime('%Y-%m-%d',v."+AngelMemoDbHelper.COLUMN_DATE+") " +
                             "from "+AngelMemoDbHelper.TABLE_ANGEL_WERTE+" v " +
                             "where v."+AngelMemoDbHelper.COLUMN_ID_SENSOR+" = "+sensor.getSensorId()+" " +
-                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date";
+                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date DESC";
                     break;
                 case STEPCOUNTER:
                     sqlString = "select *,max(v."+AngelMemoDbHelper.COLUMN_VALUE+"), strftime('%Y-%m-%d',v."+AngelMemoDbHelper.COLUMN_DATE+") " +
                             "from "+AngelMemoDbHelper.TABLE_ANGEL_WERTE+" v " +
                             "where v."+AngelMemoDbHelper.COLUMN_ID_SENSOR+" = "+sensor.getSensorId()+" " +
-                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date";
+                            "group by strftime('%Y-%m-%d',"+AngelMemoDbHelper.COLUMN_DATE+") order by v.date DESC";
                     break;
                 case BATTERY:
                     sqlString = "select * from " + AngelMemoDbHelper.TABLE_ANGEL_WERTE + " v where "+ sensor.getSensorId() + "=v." + AngelMemoDbHelper.COLUMN_ID_SENSOR + " order by v.date DESC";

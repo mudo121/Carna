@@ -99,7 +99,7 @@ public class UserSelectionActivity extends AppCompatActivity {
                 final int itemPos = position;
 
                 alertDialogBuilder.setCancelable(false)
-                        .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 String username = listAdapter.getItem(itemPos);
                                 source.deleteUserByName(username);
@@ -108,7 +108,7 @@ public class UserSelectionActivity extends AppCompatActivity {
                                 lv.setAdapter(listAdapter);
                             }
                         })
-                        .setNegativeButton("Abbrechen",
+                        .setNegativeButton("Cancel",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();

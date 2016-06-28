@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.christina.carna_ui.R;
+import com.example.christina.carna_ui.customview.BatteryLevelGraphView;
 import com.example.christina.carna_ui.customview.OpticalGraphView;
 import com.example.christina.carna_ui.database.AngelMemoDataSource;
 import com.example.christina.carna_ui.database.AngelMemoWerte;
@@ -22,6 +23,8 @@ import com.example.christina.carna_ui.enumclass.SensorType;
 import com.example.christina.carna_ui.listviewadapter.ListHistoryItem;
 import com.example.christina.carna_ui.listviewadapter.ListHistoryItemsAdapter;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -34,6 +37,7 @@ public class HistoryViewActivity extends AppCompatActivity {
     BroadcastReceiver receiver;
     OpticalGraphView greenGraph;
     OpticalGraphView blueGraph;
+    BatteryLevelGraphView batteryGraph;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +53,7 @@ public class HistoryViewActivity extends AppCompatActivity {
             }
         };
 
-        if(type == SensorType.HEARTRATE){
+        if(type == SensorType.HEARTRATE) {
             setContentView(R.layout.activity_history_heartrate);
             greenGraph = (OpticalGraphView) findViewById(R.id.graph_blue);
             blueGraph = (OpticalGraphView) findViewById(R.id.graph_green);
@@ -60,7 +64,7 @@ public class HistoryViewActivity extends AppCompatActivity {
                 public void onReceive(Context context, Intent intent) {
                     BroadcastIntentValueType waveform = BroadcastIntentValueType.valueOf(intent.getStringExtra(BroadcastIntentValueType.OPTICAL_SENSOR_COLOR.toString()));
                     OpticalGraphView o = null;
-                    switch(waveform){
+                    switch (waveform) {
                         case OPTICAL_BLUE:
                             o = blueGraph;
                             break;
@@ -68,9 +72,13 @@ public class HistoryViewActivity extends AppCompatActivity {
                             o = greenGraph;
                             break;
                     }
-                    o.addValue((float)intent.getIntExtra(BroadcastIntentValueType.OPTICAL_VALUE.toString(),0));
+                    o.addValue((float) intent.getIntExtra(BroadcastIntentValueType.OPTICAL_VALUE.toString(), 0));
                 }
             };
+        } else if(type == SensorType.BATTERY) {
+            setContentView(R.layout.activity_history_battery);
+            batteryGraph = (BatteryLevelGraphView) findViewById(R.id.graph_battery);
+
         }else {
             setContentView(R.layout.activity_history);
         }
@@ -86,30 +94,49 @@ public class HistoryViewActivity extends AppCompatActivity {
         switch (type) {
             case TEMPERATURE:
                 //Get Values
+                setTitle("Carna - Temperatur Overview");
                 imageView.setImageResource(R.drawable.temperatur);
                 values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.TEMPERATURE.toString()));
                 break;
             case STEPCOUNTER:
                 //Get Values
+                setTitle("Carna - Stepcounter Overview");
                 imageView.setImageResource(R.drawable.stepcounter);
                 values =source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.STEPCOUNTER.toString()));
                 break;
             case HEARTRATE:
                 //Get Values
+                setTitle("Carna - Heartrate Overview");
                 imageView.setImageResource(R.drawable.heart);
                 values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.HEARTRATE.toString()));
                 break;
             case BATTERY:
                 //Get Values
+                setTitle("Carna - Battery Level Overview");
                 imageView.setImageResource(R.drawable.battery);
                 values = source.getWerte(b.getInt(IntentValueType.USER_ID.toString()),source.getSensorByName(SensorType.BATTERY.toString()));
                 break;
             default:
-                break;
-        }
-        if(values != null){
-            for(int i = 0; i < values.size(); i++){
-                adapter.addItem(new ListHistoryItem(values.get(i).getWert(),values.get(i).getDatum()));
+                    break;
+            }
+            if(values != null){
+                if(type == SensorType.BATTERY) {
+                    if(values.size() < 100) {
+                        batteryGraph.setMaximumNumberOfValues(100);
+                    } else {
+                        batteryGraph.setMaximumNumberOfValues(values.size());
+                    }
+                    for(int i = values.size()-1; i >= 0; i--){
+                        batteryGraph.addValue(Float.parseFloat(values.get(i).getWert()));
+                    }
+                }
+                for (int i = 0; i < values.size(); i++) {
+                    Timestamp ts = Timestamp.valueOf(values.get(i).getDatum());
+
+                    SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+                    String dateString = s.format(ts);
+
+                    adapter.addItem(new ListHistoryItem(values.get(i).getWert(), dateString));
             }
         }
         listView.setAdapter(adapter);

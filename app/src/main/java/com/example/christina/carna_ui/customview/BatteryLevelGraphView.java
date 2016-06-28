@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class OpticalGraphView extends View {
+public class BatteryLevelGraphView extends View {
     public static final float BEZIER_FINE_FIT = 0.5f;
 
     private int maximumNumberOfValues = 400;
@@ -63,17 +63,17 @@ public class OpticalGraphView extends View {
     private float minValue = 0f;
     private float maxValue = 1f;
 
-        public OpticalGraphView(Context context) {
+    public BatteryLevelGraphView(Context context) {
         super(context);
         initView();
     }
 
-    public OpticalGraphView(Context context, AttributeSet attrs) {
+    public BatteryLevelGraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView();
     }
 
-    public OpticalGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BatteryLevelGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initView();
     }
@@ -203,7 +203,7 @@ public class OpticalGraphView extends View {
             float currentValue = currentValuesCache.get(index);
             float pathValue = previousValue + (currentValue - previousValue);
             float x = drawingArea.left + (scaleInX * index);
-            float y = drawingArea.bottom - ((pathValue - minValue) * scaleInY);
+            float y = drawingArea.bottom - ((pathValue) * scaleInY);
             if (index == 0) {
                 path.moveTo(x, y);
             } else {
@@ -219,23 +219,10 @@ public class OpticalGraphView extends View {
     private void calculateScales() {
         if (drawingArea != null) {
             scaleInX = (drawingArea.width() / (maximumNumberOfValues - 1));
-            scaleInY = (drawingArea.height() / (maxValue - minValue));
+            scaleInY = (drawingArea.height() / 100);
         } else {
             scaleInY = 0f;
             scaleInX = 0f;
         }
-    }
-
-    public void updateScaleBattery(float height) {
-
-        if (drawingArea != null) {
-            scaleInX = (drawingArea.width() / (maximumNumberOfValues - 1));
-            scaleInY = (drawingArea.height() / height);
-        } else {
-            scaleInY = 0f;
-            scaleInX = 0f;
-        }
-
-        invalidate();
     }
 }
